@@ -1,10 +1,17 @@
+from .base import *
+from .noop import *
+from .string import *
+from .integer import *
+from .real import *
+
+
 cgm_delimiter_elements = [
   {
     'element': 'NO-OP',
     'id': 0,
-    'type': 'NOOP',
+    'type': '_',
     'len': 'n',
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_METAFILE',
@@ -16,9 +23,9 @@ cgm_delimiter_elements = [
   {
     'element': 'END_METAFILE',
     'id': 2,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_PICTURE',
@@ -30,16 +37,16 @@ cgm_delimiter_elements = [
   {
     'element': 'BEGIN_PICTURE_BODY',
     'id': 4,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'END_PICTURE',
     'id': 5,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_SEGMENT',
@@ -51,23 +58,23 @@ cgm_delimiter_elements = [
   {
     'element': 'END_SEGMENT',
     'id': 7,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_FIGURE',
     'id': 8,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'END_FIGURE',
     'id': 9,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_PROTECTION_REGION',
@@ -79,47 +86,42 @@ cgm_delimiter_elements = [
   {
     'element': 'END_PROTECTION_REGION',
     'id': 14,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_COMPOUND_LINE',
     'id': 15,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'END_COMPOUND_LINE',
     'id': 16,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_COMPOUND_TEXT_PATH',
     'id': 17,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'END_COMPOUND_TEXT_PATH',
     'id': 18,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_TILE_ARRAY',
     'id': 19,
-    'type': [
-      'P',
-      '2E',
-      '4I,2R',
-      '2I,2I'
-    ],
+    'type': 'P,2E,4I,2R,2I,2I'
     'len': [
       'BP+',
       '2BE+',
@@ -136,9 +138,9 @@ cgm_delimiter_elements = [
   {
     'element': 'END_TILE_ARRAY',
     'id': 20,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'BEGIN_APPLICATION_STRUCTURE',
@@ -150,16 +152,16 @@ cgm_delimiter_elements = [
   {
     'element': 'BEGIN_APPLICATION_STRUCTURE_BODY',
     'id': 22,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'END_APPLICATION_STRUCTURE',
     'id': 23,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   }
 ]
 
@@ -190,11 +192,7 @@ cgm_metafile_descriptor_elements = [
     'id': 5,
     'type': 'E,2I',
     'len': 'BE+2BI',
-    'range': [
-      '{0,1}',
-      '{9,12,16,32}',
-      '{23,52,16,32}'
-    ]
+    'range': '{0,1},{9,12,16,32},{23,52,16,32}'
   },
   {
     'element': 'INDEX_PRECISION',
@@ -229,17 +227,14 @@ cgm_metafile_descriptor_elements = [
     'id': 10,
     'type': [
       '2CD',
-      'or',
       '6R'
     ],
     'len': [
       '2BCD',
-      'or',
       '6BR'
     ],
     'range': [
       'CCOR',
-      'or',
       'RR'
     ]
   },
@@ -253,15 +248,9 @@ cgm_metafile_descriptor_elements = [
   {
     'element': 'METAFILE_DEFAULTS_REPLACEMENT',
     'id': 12,
-    'type': [
-      'Metafile',
-      'elements'
-    ],
+    'type': 'METAFILE_ELEMENTS',
     'len': 'variable',
-    'range': [
-      'Metafile',
-      'elements'
-    ]
+    'range': 'METAFILE_ELEMENTS',
   },
   {
     'element': 'FONT_LIST',
@@ -315,12 +304,7 @@ cgm_metafile_descriptor_elements = [
   {
     'element': 'COLOUR_CALIBRATION',
     'id': 20,
-    'type': [
-      'IX,3R',
-      '18R,I',
-      '6nCCO,I',
-      'mCD,3mR'
-    ],
+    'type': 'IX,3R,18R,I,6nCCO,I,mCD,3mR',
     'len': [
       'BIX+3BR+',
       '18BR+BI+',
@@ -342,16 +326,12 @@ cgm_metafile_descriptor_elements = [
       'n(BIX+BI)+',
       '(sum of)BSDR'
     ],
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'GLYPH_MAPPING',
     'id': 22,
-    'type': [
-      'IX,E',
-      'SF,I',
-      'IX,SDR'
-    ],
+    'type': 'IX,E,SF,I,IX,SDR',
     'len': [
       'BIX+BE+',
       'BS+BI+',
@@ -460,10 +440,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'LINE_REPRESENTATION',
     'id': 11,
-    'type': [
-      '2IX',
-      'SS,CO'
-    ],
+    'type': '2IX,SS,CO',
     'len': [
       '2BIX+',
       'BSS+BCO'
@@ -476,10 +453,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'MARKER_REPRESENTATION',
     'id': 12,
-    'type': [
-      '2IX',
-      'SS,CO'
-    ],
+    'type': '2IX,SS,CO',
     'len': [
       '2BIX+',
       'BSS+BCO'
@@ -492,11 +466,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'TEXT_REPRESENTATION',
     'id': 13,
-    'type': [
-      '2IX',
-      'E',
-      '2R,CO'
-    ],
+    'type': '2IX,E,2R,CO',
     'len': [
       '2BIX+',
       'BE+',
@@ -511,11 +481,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'FILL_REPRESENTATION',
     'id': 14,
-    'type': [
-      'IX',
-      'E,CO',
-      '2IX'
-    ],
+    'type': 'IX,E,CO,2IX',
     'len': [
       'BIX+',
       'BE+BCO+',
@@ -530,10 +496,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'EDGE_REPRESENTATION',
     'id': 15,
-    'type': [
-      '2IX',
-      'SS,CO'
-    ],
+    'type': '2IX,SS,CO',
     'len': [
       '2BIX',
       'BSS+BCO'
@@ -563,12 +526,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'HATCH_STYLE_DEFINITION',
     'id': 18,
-    'type': [
-      'IX,E',
-      '4SS,SS',
-      'I,nI',
-      'nIX'
-    ],
+    'type': 'IX,E,4SS,SS,I,nI,nIX',
     'len': [
       'BIX+BE+',
       '4BSS+BSS+',
@@ -585,10 +543,7 @@ cgm_picture_descriptor_elements = [
   {
     'element': 'GEOMETRIC_PATTERN_DEFINITION',
     'id': 19,
-    'type': [
-      'IX,N',
-      '2P'
-    ],
+    'type': 'IX,N,2P',
     'len': [
       'BIX+BN+',
       '2BP'
@@ -681,9 +636,9 @@ cgm_control_elements = [
   {
     'element': 'NEW_REGION',
     'id': 10,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'SAVE_PRIMITIVE_CONTEXT',
@@ -767,10 +722,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'RESTRICTED_TEXT',
     'id': 5,
-    'type': [
-      '2VDC,P',
-      'E,S'
-    ],
+    'type': '2VDC,P,E,S',
     'len': [
       '2VDC+BP+',
       'BE+BS'
@@ -804,10 +756,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'CELL_ARRAY',
     'id': 9,
-    'type': [
-      '3P,3I',
-      'E,CLIST'
-    ],
+    'type': '3P,3I,E,CLIST',
     'len': [
       '3BP+3BI+',
       'BE+nBCO'
@@ -864,10 +813,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'CIRCULAR_ARC_CENTRE',
     'id': 15,
-    'type': [
-      'P,4VDC',
-      'VDC'
-    ],
+    'type': 'P,4VDC,VDC',
     'len': [
       'BP+4BVDC+',
       'BVDC'
@@ -880,10 +826,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'CIRCULAR_ARC_CENTRE_CLOSE',
     'id': 16,
-    'type': [
-      'P,4VDC',
-      'VDC,E'
-    ],
+    'type': 'P,4VDC,VDC,E',
     'len': [
       'BP+4BVDC+',
       'BVDC+BE'
@@ -910,10 +853,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'ELLIPTICAL_ARC_CLOSE',
     'id': 19,
-    'type': [
-      '3P,4VDC',
-      'E'
-    ],
+    'type': '3P,4VDC,E',
     'len': [
       '3BP+4BVDC+',
       'BE'
@@ -926,10 +866,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'CIRCULAR_ARC_CENTRE_REVERSED',
     'id': 20,
-    'type': [
-      'P,4VDC',
-      'VDC'
-    ],
+    'type': 'P,4VDC,VDC',
     'len': [
       'BP+4BVDC+',
       'BVDC'
@@ -942,9 +879,9 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'CONNECTING_EDGE',
     'id': 21,
-    'type': 'n/a',
+    'type': None,
     'len': 0,
-    'range': 'n/a'
+    'range': None
   },
   {
     'element': 'HYPERBOLIC_ARC',
@@ -963,11 +900,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'NON-UNIFORM_B-SPLINE',
     'id': 24,
-    'type': [
-      '2I,nP',
-      '(n+m)R',
-      '2R'
-    ],
+    'type': '2I,nP,(n+m)R,2R',
     'len': [
       '2BI+nBP+',
       '(n+m)BR+',
@@ -982,12 +915,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'NON-UNIFORM_RATIONAL_B-SPLINE',
     'id': 25,
-    'type': [
-      '2I,nP',
-      '(n+m)R',
-      '2R',
-      'nR'
-    ],
+    'type': '2I,nP,(n+m)R,2R,nR'
     'len': [
       '2BI+nBP+',
       '(n+m)BR+',
@@ -1004,10 +932,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'POLYBEZIER',
     'id': 26,
-    'type': [
-      'IX,4nP(or)',
-      '(3n+1)P'
-    ],
+    'type': 'IX,4nP(or),(3n+1)P',
     'len': [
       'BIX+4nBP(or)',
       'BIX+(3n+1)P'
@@ -1027,11 +952,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'BITONAL_TILE',
     'id': 28,
-    'type': [
-      'IX,I',
-      '2CO',
-      'SDR,BS'
-    ],
+    'type': 'IX,I,2CO,SDR,BS',
     'len': [
       'BIX+BIX+',
       '2BCO+',
@@ -1046,10 +967,7 @@ cgm_graphical_primitive_elements = [
   {
     'element': 'TILE',
     'id': 29,
-    'type': [
-      'IX,I',
-      'I,SDR,BS'
-    ],
+    'type': 'IX,I,I,SDR,BS',
     'len': [
       'BIX+BI+',
       'BI+BSDR+BB',
@@ -1185,10 +1103,7 @@ cgm_attribute_elements = [
   {
     'element': 'TEXT_ALIGNMENT',
     'id': 18,
-    'type': [
-      '2E',
-      'R,R'
-    ],
+    'type': '2E,R,R',
     'len': [
       '2BE+',
       '2BR'
@@ -1285,10 +1200,7 @@ cgm_attribute_elements = [
   {
     'element': 'PATTERN_TABLE',
     'id': 32,
-    'type': [
-      'IX,3I',
-      'nx*nyCO'
-    ],
+    'type': 'IX,3I,nx*nyCO',
     'len': [
       'BIX+3BI+',
       'nx*nyBCO'
@@ -1371,10 +1283,7 @@ cgm_attribute_elements = [
   {
     'element': 'INTERPOLATED_INTERIOR',
     'id': 43,
-    'type': [
-      'IX,2nSS',
-      'I,mR,kCO'
-    ],
+    'type': 'IX,2nSS,I,mR,kCO',
     'len': [
       '2BIX+2nBSS+',
       'BI+mBR+kBCO'
@@ -1473,11 +1382,7 @@ cgm_segment_elements = [
   {
     'element': 'COPY_SEGMENT',
     'id': 1,
-    'type': [
-      'N,4R',
-      '2VDC',
-      'E'
-    ],
+    'type': 'N,4R,2VDC,E',
     'len': [
       'BN+4BR+',
       '2BVDC +',
@@ -1506,10 +1411,7 @@ cgm_segment_elements = [
   {
     'element': 'SEGMENT_TRANSFORMATION',
     'id': 4,
-    'type': [
-      'N,4R',
-      '2VDC'
-    ],
+    'type': 'N,4R,2VDC',
     'len': [
       'BN+4BR+',
       '2BVDC'
@@ -1564,3 +1466,37 @@ cgm_class_codes = [
   { 'class': 8, 'type': cgm_segment_elements },
   { 'class': 9, 'type': cgm_application_elements },
 ]
+
+
+
+class CGMGenericType(CGMBaseType):
+    def __init__(self, config, fp, types):
+        self.types = types
+        self.num_elems = num_elems
+        Super(CGMBaseType, self).__init__(config, fp)
+
+    def extract(self):
+        values = []
+        for typ in self.types:
+            values.append(typ(self.config, self.fp))
+        self.value = tuple(values)
+
+    @classmethod
+    def make(config, fp, value):
+        elements = re.findall(r'([0-9]+)([^, ]+)', value)
+        types = []
+        for elem in elements:
+            num, class_str = elem
+            types.extend([globals()[class_str]] * num)
+        return cls(config, fp, types)
+
+    @classmethod
+    def discover(config, fp):
+        # parses
+        elements = re.findall(r'([0-9]+)([^, ]+)', value)
+        types = []
+        for elem in elements:
+            num, class_str = elem
+            types.extend([globals()[class_str]] * num)
+        return cls(config, fp, types)
+
