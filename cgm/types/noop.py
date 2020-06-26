@@ -1,11 +1,18 @@
 from .base import CGMBaseType
 
 
-class NOOP(CGMBaseType):
-    def __init__(self, config, fp, param_len):
+class _NOOP(CGMBaseType):
+    def __init__(self, fp, config, param_len):
         self.param_len = param_len
-        Super(CGMBaseType, self).__init__(config, fp)
+        super().__init__(fp, config)
 
     def extract(self):
         # Consume the required number of bytes
         self.raw = self.fp.read(self.param_len)
+
+    def __str__(self):
+        return f'{self.__class__.__name__}({self.raw.hex()})'
+
+__all__ = [
+    '_NOOP',
+]

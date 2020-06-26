@@ -3,10 +3,42 @@
 # pip install tabula-py
 
 import re
-#import pprint
 import json
 import tabula
-import numpy as np
+import argparse
+
+# This is silly but I'll do it for a util script
+import os.path
+parent_dir = os.path.join(os.path.dirname(__file__), '..')
+import sys
+sys.path.append(parent_dir)
+
+from cgm.utils import SparseRange, OffsetList, OffsetStr
+
+# Wrapper types for SparseRange and Offset to make it easier to serialize them
+class OffsetWrapper(object):
+    def __init__(self, *args):
+        if len(args) == 1 and isinstance(args[0], str):
+            self._obj = OffsetStr(*args)
+        else:
+            self._obj = OffsetList(*args)
+
+    def __repr__(self):
+        return repr(self._obj)
+
+    def __str__(self):
+        return repr(self._obj)
+
+
+class SparseRangeWrapper(object):
+    def __init__(self, *args):
+        self._obj = SparseRange(*args)
+
+    def __repr__(self):
+        return repr(self._obj)
+
+    def __str__(self):
+        return repr(self._obj)
 
 
 def element_formatter(val):
@@ -38,7 +70,6 @@ def id_formatter(val):
         #    return int(val)
         #except ValueError:
         #    return str(val)
-
 
 # The coordinates here assume the coordinates used by skim.app:
 #   coordinates starting at the lower left of the highlighted box
@@ -76,7 +107,7 @@ table_config = {
         'pages': [
             {
                 'page': 26,
-                'coords': (0, 595, 160, 510),
+                'coords': (0, 595, 162, 518),
             },
         ],
     },
@@ -194,6 +225,69 @@ def valid_row(row):
     return all(x is not None for x in row)
 
 
+def split_list_str(value):
+    if value is None:
+        return value
+
+    # If the input value is a list, join all lines with a comma
+    if isinstance(value, list):
+        value = ','.join(value)
+
+    # Now split on all non-enclosed commas
+    parts = [
+        r'[^-+,\{\(\[]+',
+        r'\([^\)]+\)',
+        r'\[[^\]]+\]',
+        r'\{[^\}]+\}',
+        r', ?',
+        r'\+ ?',
+        r'- ?',
+    ]
+
+    pat_str = r'|'.join([f'({p})' for p in parts])
+    pat = re.compile(pat_str)
+
+    # Remove all of the empty elements from the list
+    val_list = [v for v in pat.split(value) if v]
+
+    # Start with only one element in the results list that is an empty string
+    result = [[]]
+    for val in val_list:
+        if val in [',', '+', '-', ', ', '+ ', '- ']:
+            # Only start a new element if the previous is not empty
+            if result[-1] != []:
+                result.append([])
+        else:
+            result[-1].append(val)
+
+    # Now go through and re-process any elements that aren't complete
+    processed_results = []
+    for val_list in result:
+        line = []
+        for val in val_list:
+            if val[0] == '(':
+                assert val[-1] == ')'
+                val = split_list_str(val[1:-1])
+            elif val[0] == '[':
+                assert val[-1] == ']'
+                val = OffsetWrapper(split_list_str(val[1:-1]))
+            elif val[0] == '{':
+                assert val[-1] == '}'
+                val = SparseRangeWrapper(val[1:-1])
+
+            line.append(val)
+
+        if len(line) == 1:
+            processed_results.append(line[0])
+        else:
+            processed_results.append(tuple(line))
+
+    if len(processed_results) == 1:
+        return processed_results[0]
+    else:
+        return tuple(processed_results)
+
+
 def parse(pdf_filename):
     out = {}
     for key in table_config:
@@ -247,10 +341,35 @@ def parse(pdf_filename):
                         # If the class is invalid then this is the "reserved" 
                         # line, just delete this row
                         out[key] = out[key][:-1]
-                elif 'element' in latest and isinstance(latest['element'], list):
-                    out[key][-1]['element'] = '_'.join(latest['element'])
+
+        # loop through the parsed table rows and make some adjustments
+        for row in out[key]:
+            if 'element' in row:
+                if isinstance(row['element'], list):
+                    row['element'] = '_'.join(row['element'])
+
+                # Also join the 'type', 'len', and 'range' fields together 
+                # unless there is an 'or' element in the list
+                for field in['type', 'len', 'range']:
+                    if row[field] == 'see below':
+                        row[field] = 'NOOP'
+                    elif row[field] == 'n/a':
+                        row[field] = None
+                    else:
+                        # Now split on all non-enclosed commas
+                        row[field] = split_list_str(row[field])
 
     return out
+
+
+class json_encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, OffsetWrapper):
+            return str(obj)
+        elif isinstance(obj, SparseRangeWrapper):
+            return str(obj)
+
+        return super().encode(obj)
 
 
 def save(output_filename, tables):
@@ -272,21 +391,39 @@ def save(output_filename, tables):
 
     pyfile = open(output_filename, 'w')
 
+    # import the required types first
+    pyfile.write('from cgm.utils import SparseRange, OffsetList, OffsetStr\n\n\n')
+
     # Write out the non-class tables
     table_list = [r['type'] for r in class_table]
     for table in table_list:
         table_name = class_name_map[table]
-        table_str = json.dumps(tables[table_name], indent=2)
+        # restructure the table so that instead of a list of elements each one 
+        # is a dict indexed by the 'id' of that element
+        out_table = dict((v['id'], v) for v in tables[table_name])
+        table_str = json.dumps(out_table, indent=2, cls=json_encoder)
+
+        # I do want 'None' instead of 'null' because this is a python file being 
+        # created, just using json.dumps() for formatting convenience.
+        table_str = re.sub(r'null', r'None', table_str)
+
+        # Similarly, un-jsonify any integer keys
+        table_str = re.sub(r'"([0-9]+)":', r'\1:', table_str)
+
+        # Remove the wrapping quotes from around the custom types
+        table_str = re.sub(r'"(SparseRange\(.*\))"', r'\1', table_str)
+        table_str = re.sub(r'"(OffsetList\(.*\))"', r'\1', table_str)
+        table_str = re.sub(r'"(OffsetStr\(.*\))"', r'\1', table_str)
+
         pyfile.write(f'{table_name} = {table_str}\n\n')
 
-
     # Write out this table manually so that it references the other tables in 
-    # the file rather than strings
-    pyfile.write('cgm_class_codes = [\n')
+    # the file rather than strings. Instead of a list it should be a dict using 
+    # the 'class' as the key.
+    pyfile.write('cgm_class_codes = {\n')
     for row in class_table:
-        out_fmt = '  { "class": %s, "type": %s },\n'
-        pyfile.write(out_fmt % (row['class'], class_name_map[row['type']]))
-    pyfile.write(']\n')
+        pyfile.write(f'  {row["class"]}: {class_name_map[row["type"]]},\n')
+    pyfile.write('}\n')
 
 
 def main(pdf_filename, output_filename):
@@ -297,6 +434,9 @@ def main(pdf_filename, output_filename):
 
 
 if __name__ == '__main__':
-    pdf_filename = 'docs/c032380e.pdf'
-    output_filename = 'cgm_types.py'
-    main(pdf_filename, output_filename)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('cgm', help='CGM file to parse')
+    parser.add_argument('py', help='output file for the parsed python data')
+    args = parser.parse_args()
+
+    main(args.cgm, args.py)

@@ -1,13 +1,19 @@
-from cgm.utils import word, signed
-from .color_model import COLOR_MODEL, COLOR_SELECTION_MODE
+
+from cgm.utils import word, signed, unsigned
+from cgm.enums import *
+
+from .base import CGMBaseType
 
 class _I(CGMBaseType):
+    def _word_align(self):
+        pass
+
     @property
     def precision(self):
         return self.config.INTEGER_PRECISION
 
     def convert(self, in_bytes):
-        return signed(int.from_bytes(in_bytes, 'big'))
+        return signed(int.from_bytes(in_bytes, 'big'), self.precision)
 
     def extract(self):
         self.param_len = self.precision // 8
@@ -16,91 +22,109 @@ class _I(CGMBaseType):
 
 _SI = _I
 
+
+# Some specialized precision types
+class _IF8(_I):
+    @property
+    def precision(self):
+        return 8
+
+
+class _IF16(_I):
+    @property
+    def precision(self):
+        return 16
+
+
+class _IF24(_I):
+    @property
+    def precision(self):
+        return 24
+
+
+class _IF32(_I):
+    @property
+    def precision(self):
+        return 32
+
 class _UI(_I):
     def convert(self, in_bytes):
-        return int.from_bytes(in_bytes, 'big')
+        return unsigned(int.from_bytes(in_bytes, 'big'), self.precision)
 
 
 # Some specialized precision types
 class _UI8(_UI):
     @property
-    def _precision(self):
+    def precision(self):
         return 8
 
 
 class _UI16(_UI):
     @property
-    def _precision(self):
+    def precision(self):
         return 16
 
 
 class _UI24(_UI):
     @property
-    def _precision(self):
+    def precision(self):
         return 24
 
 
 class _UI32(_UI):
     @property
-    def _precision(self):
+    def precision(self):
         return 32
 
 
 # ENUMERATED
-_E = _UI16
+class _E(_UI16):
+    @property
+    def enum_type(self):
+        raise NotImplementedError
+
+    def extract(self):
+        super().extract()
+        self.enum_val = self.enum_type(self.value)
+
+    def __str__(self):
+        return f'{self.__class__.__name__}({self.enum_val.name}({self.value}))'
+
+
+class _BOOL_E(_E):
+    @property
+    def enum_type(self):
+        return BOOL_ENUM
+
 
 # NAME
 class _N(_I):
     @property
-    def _precision(self):
+    def precision(self):
         return self.config.NAME_PRECISION
 
 
 # INDEX
 class _IX(_I):
     @property
-    def _precision(self):
+    def precision(self):
         return self.config.INDEX_PRECISION
 
 
-# COLOR (COLOUR) INDEX
-class _CI(_I)
-    @property
-    def _precision(self):
-        return self.config.COLOR_INDEX_PRECISION
-
-
-# (direct) COLOR (COLOUR) PRECISION
-class _CCO(_I)
-    @property
-    def _precision(self):
-        return self.config.COLOR_INDEX_PRECISION
-
-
-# 3 or 4 _CCO values depending on the color model 
-#class _CD(_CCO):
-#    @property
-#    def num_elems(self):
-#        if self.config.COLOR_MODEL == COLOR_MODEL.RGB:
-#            return 3
-#        elif self.config.COLOR_MODEL == COLOR_MODEL.CMYK:
-#            return 4
-#        else:
-#            raise ValueError(f'Bad color model: {self.config.COLOR_MODEL}')
-
-
-# COLOR (COLOUR) PRECISION (depending on color selection mode)
-class _CO(_I)
-    @property
-    def _precision(self):
-        if self.config.COLOR_SELECTION_MODE == COLOR_SELECTION_MODE.INDEXED:
-            return self.config.COLOR_INDEX_PRECISION
-        else:
-            return self.config.COLOR_PRECISION
-
-
-# VDC (Virtual Device Coordinates) INTEGER
-class _VDC(_I):
-    @property
-    def _precision(self):
-        return self.config.VDC_INTEGER_PRECISION
+__all__ = [
+    '_I',
+    '_SI',
+    '_IF8',
+    '_IF16',
+    '_IF24',
+    '_IF32',
+    '_UI',
+    '_UI8',
+    '_UI16',
+    '_UI24',
+    '_UI32',
+    '_E',
+    '_BOOL_E',
+    '_N',
+    '_IX',
+]

@@ -1,51 +1,87 @@
 
-from .types import COLOR_MODEL
+from .enums import *
 
 
 class CGMConfig(object):
     def __init__(self):
         # NOTE: VDC == Virtual Device Coordinates
         self._config = {
-            'COLOR_MODEL': None,
-            'COLOR_SELECTION_MODE': None,
-            'REAL_PRECISION': (1, 16, 16),      # 1 == Fixed point
-            'INTEGER_PRECISION': 16,
-            'COLOR_PRECISION': 1,
-            'COLOR_INDEX_PRECISION': 1,
-            'INDEX_PRECISION': 16,
-            'VDC_REAL_PRECISION': (1, 16, 16),  # 1 == Fixed point
-            'VDC_INTEGER_PRECISION': 16,
-            'NAME_PRECISION': 16
-            'COLOR_VALUE_EXTENT': None,
+            'COLOR_MODEL':                       {'type': COLOR_MODEL_ENUM, 'default': 1},
+            'COLOR_SELECTION_MODE':              {'type': COLOR_SELECTION_MODE_ENUM},
+            'VDC_TYPE':                          {'type': VDC_TYPE_ENUM},
+            'LINE_WIDTH_SPECIFICATION_MODE':     {'type': WIDTH_SPECIFICATION_MODE_ENUM},
+            'MARKER_SIZE_SPECIFICATION_MODE':    {'type': WIDTH_SPECIFICATION_MODE_ENUM},
+            'EDGE_WIDTH_SPECIFICATION_MODE':     {'type': WIDTH_SPECIFICATION_MODE_ENUM},
+            'INTERIOR_STYLE_SPECIFICATION_MODE': {'type': WIDTH_SPECIFICATION_MODE_ENUM},
+            'INTERIOR_STYLE':                    {'type': INTERIOR_STYLE_ENUM},
+            'TEXT_PRECISION':                    {'type': TEXT_PRECISION_ENUM},
+            'REAL_PRECISION':                    {'type': REAL_PRECISION_CONFIG, 'default': (REAL_MODE_ENUM.FIXED, 16, 16)},
+            'INTEGER_PRECISION':                 {'type': None, 'default': 16},
+            'COLOR_PRECISION':                   {'type': None, 'default': 16},
+            'COLOR_INDEX_PRECISION':             {'type': None, 'default': 16},
+            'INDEX_PRECISION':                   {'type': None, 'default': 16},
+            'VDC_REAL_PRECISION':                {'type': REAL_PRECISION_CONFIG, 'default': (REAL_MODE_ENUM.FIXED, 16, 16)},
+            'VDC_INTEGER_PRECISION':             {'type': None, 'default': 16},
+            'NAME_PRECISION':                    {'type': None, 'default': 16},
         }
 
-        # The COLOR_VALUE_EXTENT value depends on COLOR_MODEL
-        self._cve = {
-            COLOR_MODEL.RGB: ((0, 0, 0), (255, 255, 255)),
-            COLOR_MODEL.CMYK: ((0, 0, 0, 0), (255, 255, 255, 255)),
-            COLOR_MODEL.CIELUV: (0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-            COLOR_MODEL.CIELAB: (0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-            COLOR_MODEL.RGB_related: (0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-        }
+        for key in self._config:
+            if 'default' in self._config[key] and \
+                    self._config[key]['default'] is not None:
+                self.set(key, self._config[key]['default'])
+            else:
+                # Skip the setter and just set the value to None
+                self._config[key]['value'] = None
 
-    def __getattr__(self, name):
-        if name in self._config:
-            return self._config[name]
+    def __repr__(self):
+        return str(self._config)
 
-        if 'COLOUR_' in name:
-            # translate between COLOR and COLOUR
-            name = name.replace('COLOUR_', 'COLOR_')
+    def __iter__(self):
+        for key in self._config:
+            yield key
 
-            if name in self._config:
-                return self._config[name]
+    def _fixkey(self, key):
+        if 'COLOUR_' in key:
+            key = key.replace('COLOUR_','COLOR_')
+        return key
 
-        return self.__getattribute__(name)
+    def __contains__(self, key):
+        key = self._fixkey(key)
+        if key in self._config:
+            return True
+        return False
 
-    def __setattr__(self, name, value):
-        if name in self._config:
-            self._config[name] = value
-            if name == 'COLOR_MODEL':
-                # also set the COLOR_VALUE_EXTENT
-                self._config['COLOR_VALUE_EXTENT'] = self._cve[COLOR_MODEL(value)]
+    def get(self, key):
+        key = self._fixkey(key)
+        value = self._config[key]['value']
+        return self._config[key]['value']
+
+    def set(self, key, value):
+        key = self._fixkey(key)
+        try:
+            value = value.unwrap()
+        except AttributeError:
+            pass
+
+        val_type = self._config[key]['type']
+        if val_type:
+            if 'value' in self._config[key]: print(f'CHANGING {key} from {self._config[key]["value"]} to {val_type(value)}')
+            self._config[key]['value'] = val_type(value)
         else:
-            sellf.__setattribute__(name, value)
+            if 'value' in self._config[key]: print(f'CHANGING {key} from {self._config[key]["value"]} to {value}')
+            self._config[key]['value'] = value
+
+    def __getattr__(self, key):
+        key = self._fixkey(key)
+        if key[0] != '_' and key in self._config:
+            return self.get(key)
+
+        return self.__getattribute__(key)
+
+    def __setattr__(self, key, value):
+        key = self._fixkey(key)
+        if key[0] != '_' and key in self._config:
+            self.set(key, value)
+
+        super().__setattr__(key, value)
+
