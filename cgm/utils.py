@@ -1,14 +1,12 @@
 
 def word(data, offset=0):
     val = int.from_bytes(data[offset:offset + 2], 'big')
-    print(hex(val))
     return val
 
 
 def assert_word_len(one, two):
     # Since file positions need to be rounded up to the nearest 16bits, compare 
     # two sizes rounded up and make sure they match
-    print(f'assert? {one} =?= {two}')
     assert (one + 1) // 2 == (two + 1) // 2
 
 

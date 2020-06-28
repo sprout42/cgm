@@ -16,13 +16,13 @@ class CGMConfig(object):
             'INTERIOR_STYLE':                    {'type': INTERIOR_STYLE_ENUM},
             'TEXT_PRECISION':                    {'type': TEXT_PRECISION_ENUM},
             'REAL_PRECISION':                    {'type': REAL_PRECISION_CONFIG, 'default': (REAL_MODE_ENUM.FIXED, 16, 16)},
-            'INTEGER_PRECISION':                 {'type': None, 'default': 16},
-            'COLOR_PRECISION':                   {'type': None, 'default': 16},
-            'COLOR_INDEX_PRECISION':             {'type': None, 'default': 16},
-            'INDEX_PRECISION':                   {'type': None, 'default': 16},
+            'INTEGER_PRECISION':                 {'default': 16},
+            'COLOR_PRECISION':                   {'default': 16},
+            'COLOR_INDEX_PRECISION':             {'default': 16},
+            'INDEX_PRECISION':                   {'default': 16},
             'VDC_REAL_PRECISION':                {'type': REAL_PRECISION_CONFIG, 'default': (REAL_MODE_ENUM.FIXED, 16, 16)},
-            'VDC_INTEGER_PRECISION':             {'type': None, 'default': 16},
-            'NAME_PRECISION':                    {'type': None, 'default': 16},
+            'VDC_INTEGER_PRECISION':             {'default': 16},
+            'NAME_PRECISION':                    {'default': 16},
         }
 
         for key in self._config:
@@ -63,12 +63,10 @@ class CGMConfig(object):
         except AttributeError:
             pass
 
-        val_type = self._config[key]['type']
-        if val_type:
-            if 'value' in self._config[key]: print(f'CHANGING {key} from {self._config[key]["value"]} to {val_type(value)}')
+        if 'type' in self._config[key] and self._config[key]['type'] is not None:
+            val_type = self._config[key]['type']
             self._config[key]['value'] = val_type(value)
         else:
-            if 'value' in self._config[key]: print(f'CHANGING {key} from {self._config[key]["value"]} to {value}')
             self._config[key]['value'] = value
 
     def __getattr__(self, key):

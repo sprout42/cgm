@@ -9,6 +9,7 @@ class _NOOP(CGMBaseType):
     def extract(self):
         # Consume the required number of bytes
         self.raw = self.fp.read(self.param_len)
+        self.value = None
 
     def __str__(self):
         return f'{self.__class__.__name__}({self.raw.hex()})'

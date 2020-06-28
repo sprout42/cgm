@@ -35,10 +35,6 @@ class CGMGenericType(CGMBaseType):
             values.append(typ(fp=self.fp, config=self.config))
         self.value = tuple(values)
 
-        # This type is a top-level type so make sure the file is word aligned at 
-        # the end
-        self.fp.next()
-
     @classmethod
     def _make_type_list(cls, name, len_spec, param_len=None):
         # prefix the "type" with '_' and get the type
@@ -80,7 +76,6 @@ class CGMGenericType(CGMBaseType):
 
     @classmethod
     def make(cls, fp, config, elem, param_len=None):
-        print(elem)
         try:
             # If here is a type defined for this element use that instead of 
             # constructing one on the fly from the element table 'type' strings
@@ -98,7 +93,6 @@ class CGMGenericType(CGMBaseType):
 
         for elem_typ, elem_len in typ_len_list:
             match = re.match(r'^(?:([0-9]+)|(n))*([^n].*)', elem_typ)
-            print(match.groups())
 
             elem_len = cls._fix_param_len(match.group(1), match.group(2), elem_len)
             typ_list = cls._make_type_list(match.group(3), elem_len, param_len)
@@ -125,7 +119,7 @@ class CGMGenericType(CGMBaseType):
 class CGMTopLevelType(CGMBaseType):
     def extract(self):
         # First read a command header to figure out what the next element is
-        cmd = COMMAND(fp=self.fp, config=self.config, )
+        cmd = CGMCommand(fp=self.fp, config=self.config, )
 
         if cmd.elem['type'] is None:
             self.value = cmd
@@ -141,6 +135,10 @@ class CGMTopLevelType(CGMBaseType):
             # Some commands change configuration values so check for those now
             if cmd.elem['element'] in self.config:
                 self.config.set(cmd.elem['element'], elem)
+
+        # This type is a top-level type so make sure the file is word aligned at 
+        # the end
+        self.fp.next()
 
 
 class _METAFILE_DEFAULTS_REPLACEMENT(CGMTopLevelType):
@@ -200,7 +198,6 @@ base_types = dict((k, v) for k, v in globals().items()
 
 
 __all__ = [
-    'COMMAND',
     'CGMTopLevelType',
     'CGMGenericType',
     '_METAFILE_DEFAULTS_REPLACEMENT',

@@ -137,3 +137,43 @@ class INTERIOR_STYLE_ENUM(enum.IntEnum):
 class INHERITANCE_FLAG_ENUM(enum.IntEnum):
     STATE_LIST = 0
     APPLICATION_STRUCTURE = 1
+
+
+class TEXT_PATH_ENUM(enum.IntEnum):
+    RIGHT = 0
+    LEFT = 1
+    UP = 2
+    DOWN = 3
+
+
+class HORIZONTAL_ALIGNMENT_ENUM(enum.IntEnum):
+    NORMAL = 0
+    LEFT = 1
+    CENTER = 2
+    RIGHT = 3
+    CONTINUOUS = 4
+
+
+class VERTICAL_ALIGNMENT_ENUM(enum.IntEnum):
+    NORMAL = 0
+    TOP = 1
+    CAP = 2
+    HALF = 3
+    BASE = 4
+    BOTTOM = 5
+    CONTINUOUS = 6
+
+
+class RESTRICTED_TEXT_TYPE_ENUM(enum.IntEnum):
+    BASIC = 1
+    BOXED_CAP = 2
+    BOXED_ALL = 3
+    ISOTROPIC_CAP = 4
+    ISOTROPIC_ALL = 5
+    JUSTIFIED = 6
+
+
+class FINAL_FLAG_ENUM(enum.IntEnum):
+    NOT_FINAL = 0
+    FINAL = 1
+

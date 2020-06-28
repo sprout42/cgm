@@ -85,10 +85,13 @@ class _E(_UI16):
 
     def extract(self):
         super().extract()
-        self.enum_val = self.enum_type(self.value)
+        # For enum types make the "value" be the enumerated value and the 
+        # "intval" be the raw integer value
+        self.intval = self.value
+        self.value = self.enum_type(self.value)
 
     def __str__(self):
-        return f'{self.__class__.__name__}({self.enum_val.name}({self.value}))'
+        return f'{self.__class__.__name__}({self.value.name}({self.intval}))'
 
 
 class _BOOL_E(_E):

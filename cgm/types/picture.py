@@ -1,10 +1,10 @@
 
 from cgm.enums import *
 
-from .base import CGMBaseType
+from .base import CGMBaseType, CGMVariableType
 from .integer import _E, _BOOL_E
 from .real import _FP
-from .vdc import _VDC
+from .vdc import _VDC, _P
 
 
 class _SCALING_MODE_E(_E):
@@ -108,6 +108,16 @@ class _INTERIOR_STYLE(_E):
         return INTERIOR_STYLE_ENUM
 
 
+class _POLYLINE(CGMVariableType):
+    def extract_items(self):
+        return _P(fp=self.fp, config=self.config)
+
+
+class _POLYGON(CGMVariableType):
+    def extract_items(self):
+        return _P(fp=self.fp, config=self.config)
+
+
 __all__ = [
     '_SCALING_MODE',
     '_SS',
@@ -128,4 +138,6 @@ __all__ = [
     '_HATCH_STYLE_DEFINITION',
     '_INTERPOLATED_INTERIOR',
     '_INTERIOR_STYLE',
+    '_POLYLINE',
+    '_POLYGON',
 ]

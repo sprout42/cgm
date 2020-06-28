@@ -5,7 +5,8 @@ class CGMFile(object):
 
     def read(self, size):
         data = self.fp.read(size)
-        print(f'@ {self.tell()} read({size}): {data.hex()}')
+        if len(data) == 0 and size != 0:
+            raise EOFError
         return data
 
     def tell(self):
