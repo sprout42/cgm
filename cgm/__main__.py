@@ -1,4 +1,4 @@
 
-from .cgm import main
+from . import main
 
 main()
