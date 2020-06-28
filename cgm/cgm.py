@@ -79,8 +79,13 @@ class CGM(CGMBaseType):
 
         self.values = tuple(values)
 
-    def _print_elem(self, value):
-        # val is a top-level type
+    def _print_val(self, cmd, data=None):
+        if data is not None:
+            print(f'{cmd}: {data}')
+        else:
+            print(cmd)
+
+    def _unwrap_val_for_print(self, value):
         unwrapped_data = value.unwrap()
         if isinstance(unwrapped_data, str):
             cmd = unwrapped_data
@@ -89,14 +94,11 @@ class CGM(CGMBaseType):
             cmd = unwrapped_data[0]
             rest = json.dumps(unwrapped_data[1:], indent=4)
 
-        if rest is not None:
-            print(f'{cmd}: {rest}')
-        else:
-            print(cmd)
+        return (cmd, rest)
+
 
     def print(self, exclude=None):
         for val in self.values:
-            if exclude is not None and cmd not in exclude:
-                self._print_elem(val)
-            else:
-                self._print_elem(val)
+            cmd, rest = self._unwrap_val_for_print(val)
+            if exclude is None or cmd not in exclude:
+                self._print_val(cmd, rest)
