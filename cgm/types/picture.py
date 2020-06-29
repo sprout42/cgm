@@ -2,9 +2,10 @@
 from cgm.enums import *
 
 from .base import CGMBaseType, CGMVariableType
-from .integer import _E, _BOOL_E
+from .integer import _I, _IX, _E, _BOOL_E
 from .real import _FP
 from .vdc import _VDC, _P
+from .color import _CO
 
 
 class _SCALING_MODE_E(_E):
@@ -118,6 +119,39 @@ class _POLYGON(CGMVariableType):
         return _P(fp=self.fp, config=self.config)
 
 
+class _PATTERN_TABLE(CGMBaseType):
+    def extract(self):
+        args = {
+            'fp': self.fp,
+            'config': self.config,
+        }
+        self.value = {
+            'index': _IX(**args),
+            'nx': _I(**args),
+            'ny': _I(**args),
+            'color_precision': _I(**args),
+        }
+
+        # temporarily override color precision
+        nx = self.value['nx'].unwrap()
+        ny = self.value['ny'].unwrap()
+        local_precision = self.value['color_precision'].unwrap()
+        orig_precision = self.config.COLOR_PRECISION
+        self.config.COLOR_PRECISION = local_precision
+
+        patdef = []
+        for i in range(nx):
+            row = []
+            for j in range(ny):
+                item = _CO(**args)
+            patdef = tuple(row)
+
+        self.value['pattern'] = tuple(patdef)
+
+        # Restore the global color precision setting
+        self.config.COLOR_PRECISION = orig_precision
+
+
 __all__ = [
     '_SCALING_MODE',
     '_SS',
@@ -140,4 +174,5 @@ __all__ = [
     '_INTERIOR_STYLE',
     '_POLYLINE',
     '_POLYGON',
+    '_PATTERN_TABLE',
 ]
