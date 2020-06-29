@@ -8,7 +8,7 @@ ifneq ($(shell which "$(PYTHON_VERSION_CHECK)"),)
 $(error python version needs to be at least 3.8)
 endif
 
-.PHONY: all wheel install uninstall scrape-standard test clean
+.PHONY: all build wheel install uninstall scrape-standard test clean
 
 # Some vars to keep track of things
 BUILD := build
