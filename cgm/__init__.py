@@ -59,7 +59,6 @@ def run(args):
         if outfile is None:
             _outfile.close()
 
-format
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', nargs='+',
