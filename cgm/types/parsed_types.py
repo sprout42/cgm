@@ -253,7 +253,7 @@ cgm_metafile_descriptor_elements = {
     ]
   },
   7: {
-    "element": "COLOUR_PRECISION",
+    "element": "COLOR_PRECISION",
     "id": 7,
     "type": "I",
     "len": "BI",
@@ -265,7 +265,7 @@ cgm_metafile_descriptor_elements = {
     ]
   },
   8: {
-    "element": "COLOUR_INDEX_PRECISION",
+    "element": "COLOR_INDEX_PRECISION",
     "id": 8,
     "type": "I",
     "len": "BI",
@@ -277,14 +277,14 @@ cgm_metafile_descriptor_elements = {
     ]
   },
   9: {
-    "element": "MAXIMUM_COLOUR_INDEX",
+    "element": "MAXIMUM_COLOR_INDEX",
     "id": 9,
     "type": "CI",
     "len": "BCI",
     "range": "CIR"
   },
   10: {
-    "element": "COLOUR_VALUE_EXTENT",
+    "element": "COLOR_VALUE_EXTENT",
     "id": 10,
     "type": [
       "2CD",
@@ -399,14 +399,14 @@ cgm_metafile_descriptor_elements = {
     "range": "IR"
   },
   19: {
-    "element": "COLOUR_MODEL",
+    "element": "COLOR_MODEL",
     "id": 19,
     "type": "IX",
     "len": "BIX",
     "range": "IXR"
   },
   20: {
-    "element": "COLOUR_CALIBRATION",
+    "element": "COLOR_CALIBRATION",
     "id": 20,
     "type": [
       "IX",
@@ -563,7 +563,7 @@ cgm_picture_descriptor_elements = {
     ]
   },
   2: {
-    "element": "COLOUR_SELECTION_MODE",
+    "element": "COLOR_SELECTION_MODE",
     "id": 2,
     "type": "E",
     "len": "BE",
@@ -598,7 +598,7 @@ cgm_picture_descriptor_elements = {
     "range": "VDCR"
   },
   7: {
-    "element": "BACKGROUND_COLOUR",
+    "element": "BACKGROUND_COLOR",
     "id": 7,
     "type": "CD",
     "len": "BCD",
@@ -896,7 +896,7 @@ cgm_control_elements = {
     ]
   },
   3: {
-    "element": "AUXILIARY_COLOUR",
+    "element": "AUXILIARY_COLOR",
     "id": 3,
     "type": "CO",
     "len": "BCO",
@@ -990,7 +990,7 @@ cgm_control_elements = {
     "range": "RR"
   },
   20: {
-    "element": "TRANSPARENT_CELL_COLOUR",
+    "element": "TRANSPARENT_CELL_COLOR",
     "id": 20,
     "type": [
       "E",
@@ -1206,7 +1206,7 @@ cgm_graphical_primitive_elements = {
     ]
   },
   15: {
-    "element": "CIRCULAR_ARC_CENTRE",
+    "element": "CIRCULAR_ARC_CENTER",
     "id": 15,
     "type": [
       "P",
@@ -1225,7 +1225,7 @@ cgm_graphical_primitive_elements = {
     ]
   },
   16: {
-    "element": "CIRCULAR_ARC_CENTRE_CLOSE",
+    "element": "CIRCULAR_ARC_CENTER_CLOSE",
     "id": 16,
     "type": [
       "P",
@@ -1289,7 +1289,7 @@ cgm_graphical_primitive_elements = {
     ]
   },
   20: {
-    "element": "CIRCULAR_ARC_CENTRE_REVERSED",
+    "element": "CIRCULAR_ARC_CENTER_REVERSED",
     "id": 20,
     "type": [
       "P",
@@ -1534,7 +1534,7 @@ cgm_attribute_elements = {
     "range": "SSR"
   },
   4: {
-    "element": "LINE_COLOUR",
+    "element": "LINE_COLOR",
     "id": 4,
     "type": "CO",
     "len": "BCO",
@@ -1562,7 +1562,7 @@ cgm_attribute_elements = {
     "range": "SSR"
   },
   8: {
-    "element": "MARKER_COLOUR",
+    "element": "MARKER_COLOR",
     "id": 8,
     "type": "CO",
     "len": "BCO",
@@ -1604,7 +1604,7 @@ cgm_attribute_elements = {
     "range": "RR"
   },
   14: {
-    "element": "TEXT_COLOUR",
+    "element": "TEXT_COLOR",
     "id": 14,
     "type": "CO",
     "len": "BCO",
@@ -1678,7 +1678,7 @@ cgm_attribute_elements = {
     "range": SparseRange((range(0, 7),))
   },
   23: {
-    "element": "FILL_COLOUR",
+    "element": "FILL_COLOR",
     "id": 23,
     "type": "CO",
     "len": "BCO",
@@ -1721,7 +1721,7 @@ cgm_attribute_elements = {
     "range": "SSR"
   },
   29: {
-    "element": "EDGE_COLOUR",
+    "element": "EDGE_COLOR",
     "id": 29,
     "type": "CO",
     "len": "BCO",
@@ -1769,7 +1769,7 @@ cgm_attribute_elements = {
     "range": "SSR"
   },
   34: {
-    "element": "COLOUR_TABLE",
+    "element": "COLOR_TABLE",
     "id": 34,
     "type": [
       "CI",
@@ -1931,7 +1931,7 @@ cgm_attribute_elements = {
     "range": "IXR"
   },
   49: {
-    "element": "SYMBOL_COLOUR",
+    "element": "SYMBOL_COLOR",
     "id": 49,
     "type": "CO",
     "len": "BCO",
