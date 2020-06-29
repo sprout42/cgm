@@ -27,7 +27,7 @@ $(WHEEL): build
 
 wheel: $(WHEEL)
 
-install: build
+install: build $(WHEEL)
 	pip install --force-reinstall $(WHEEL)
 
 uninstall:
