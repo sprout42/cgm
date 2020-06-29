@@ -1,4 +1,5 @@
 
+import sys
 import json
 
 from .file import CGMFile
@@ -79,11 +80,11 @@ class CGM(CGMBaseType):
 
         self.values = tuple(values)
 
-    def _print_val(self, cmd, data=None):
+    def _print_val(self, cmd, data=None, file=sys.stdout):
         if data is not None:
-            print(f'{cmd}: {data}')
+            print(f'{cmd}: {data}', file=file)
         else:
-            print(cmd)
+            print(f'{cmd}', file=file)
 
     def _unwrap_val_for_print(self, value):
         unwrapped_data = value.unwrap()
@@ -97,8 +98,8 @@ class CGM(CGMBaseType):
         return (cmd, rest)
 
 
-    def print(self, exclude=None):
+    def print(self, exclude=None, file=sys.stdout):
         for val in self.values:
             cmd, rest = self._unwrap_val_for_print(val)
             if exclude is None or cmd not in exclude:
-                self._print_val(cmd, rest)
+                self._print_val(cmd, rest, file)
