@@ -78,15 +78,10 @@ class CGM(CGMBaseType):
         except EOFError:
             pass
 
-        self.values = tuple(values)
+        self._values = tuple(values)
+        self._index = None
 
-    def _print_val(self, cmd, data=None, file=sys.stdout):
-        if data is not None:
-            print(f'{cmd}: {data}', file=file)
-        else:
-            print(f'{cmd}', file=file)
-
-    def _unwrap_val_for_print(self, value):
+    def _unwrap_top_level(self, value):
         unwrapped_data = value.unwrap()
         if isinstance(unwrapped_data, str):
             cmd = unwrapped_data
@@ -94,12 +89,32 @@ class CGM(CGMBaseType):
         else:
             cmd = unwrapped_data[0]
             rest = json.dumps(unwrapped_data[1:], indent=4)
-
         return (cmd, rest)
 
+    def __getitem__(self, index):
+        return self._unwrap_top_level(self._values[index])
+
+    __setitem__ = None
+
+    def __iter__(self):
+        self._index = 0
+        return self
+
+    def __next__(self):
+        if self._index >= len(self._values):
+            raise StopIteration
+        else:
+            cmd, rest = self[self._index]
+            self._index += 1
+            return (cmd, rest)
+
+    def _print_val(self, cmd, data=None, file=sys.stdout):
+        if data is not None:
+            print(f'{cmd}: {data}', file=file)
+        else:
+            print(f'{cmd}', file=file)
 
     def print(self, exclude=None, file=sys.stdout):
-        for val in self.values:
-            cmd, rest = self._unwrap_val_for_print(val)
+        for cmd, rest in self:
             if exclude is None or cmd not in exclude:
                 self._print_val(cmd, rest, file)

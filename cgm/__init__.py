@@ -11,7 +11,7 @@ from . import types
 
 def parse(filenames):
     parsed = {}
-    for filename in args.filename:
+    for filename in filenames:
         print(f'PARSING {filename}')
         c = CGM(filename)
         parsed[filename] = c
