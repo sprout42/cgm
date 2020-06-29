@@ -9,6 +9,16 @@ from .file import *
 from .config import *
 from . import types
 
+def parse(filenames):
+    parsed = {}
+    for filename in args.filename:
+        print(f'PARSING {filename}')
+        c = CGM(filename)
+        parsed[filename] = c
+
+    return parsed
+
+
 def run(args):
     if args.output is None:
         # Print to sdtout
@@ -26,9 +36,9 @@ def run(args):
             outputdir = os.getcwd()
             outfile = None
 
-    for filename in args.filename:
-        print(f'PARSING {filename}')
-        c = CGM(filename)
+    parsed = parse(args.filename)
+    for filename in parsed:
+        c = parsed[filename]
 
         if outfile is None:
             auto_out_filename = os.path.split(filename)[1] + '-parsed.txt'
