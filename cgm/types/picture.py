@@ -144,7 +144,7 @@ class _PATTERN_TABLE(CGMBaseType):
             row = []
             for j in range(ny):
                 row.append(_CO(**args))
-            patdef = tuple(row)
+            patdef.append(tuple(row))
 
         self.value['pattern'] = tuple(patdef)
 
