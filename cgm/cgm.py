@@ -88,7 +88,10 @@ class CGM(CGMBaseType):
             rest = None
         else:
             cmd = unwrapped_data[0]
-            rest = json.dumps(unwrapped_data[1:], indent=4)
+            if len(unwrapped_data[1:]) == 1:
+                rest = unwrapped_data[1:][0]
+            else:
+                rest = unwrapped_data[1:]
         return (cmd, rest)
 
     def __getitem__(self, index):
@@ -117,4 +120,7 @@ class CGM(CGMBaseType):
     def print(self, exclude=None, file=sys.stdout):
         for cmd, rest in self:
             if exclude is None or cmd not in exclude:
-                self._print_val(cmd, rest, file)
+                if rest is not None:
+                    self._print_val(cmd, json.dumps(rest, indent=4), file)
+                else:
+                    self._print_val(cmd, None, file)

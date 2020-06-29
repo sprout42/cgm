@@ -9,10 +9,11 @@ from .file import *
 from .config import *
 from . import types
 
-def parse(filenames):
+def parse(filenames, verbose=False):
     parsed = {}
     for filename in filenames:
-        print(f'PARSING {filename}')
+        if verbose:
+            print(f'PARSING {filename}')
         c = CGM(filename)
         parsed[filename] = c
 
@@ -36,7 +37,7 @@ def run(args):
             outputdir = os.getcwd()
             outfile = None
 
-    parsed = parse(args.filename)
+    parsed = parse(args.filename, verbose=True)
     for filename in parsed:
         c = parsed[filename]
 
