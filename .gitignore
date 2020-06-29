@@ -1,1 +1,5 @@
 __pycache__/
+utils/env/
+build/
+dist/
+cgm.egg-info/
