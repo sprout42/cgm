@@ -184,9 +184,11 @@ def find_closest_center(thing_one, thing_list):
     thing_center = find_center(thing_one)
 
     min_dist = math.inf
+    closest = None
     for item in thing_list:
         dist = distance(thing_center, item)
         if dist < min_dist:
             min_dist = dist
+            closest = item
 
-    return min_dist
+    return closest
