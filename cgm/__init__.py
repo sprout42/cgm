@@ -9,6 +9,8 @@ from .file import *
 from .config import *
 from . import types
 
+import helpers
+
 def parse(filenames, verbose=False):
     parsed = {}
     for filename in filenames:
