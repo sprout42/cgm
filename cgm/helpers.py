@@ -65,6 +65,26 @@ def findbottom(thing):
         raise TypeError('must provide a point or an area')
 
 
+def findcenter(thing):
+    """
+    Returns the center of the thing as a point.
+    """
+    if ispoint(thing):
+        # The center of a point is easy
+        return thing
+    elif isarea(thing):
+        left = findleft(thing)
+        right = findright(thing)
+        x = (right - left) / 2
+
+        top = findtop(thing)
+        bottom = findbottom(thing)
+        y = (bottom - top) / 2
+        return (x, y)
+    else:
+        raise TypeError('must provide a point or an area')
+
+
 def isinside(area, thing):
     if not isarea(area):
         raise TypeError('first argument must be an area')
@@ -103,3 +123,37 @@ def isbelow(one, two):
     Indicates if one is below two
     """
     return findtop(one) > findtop(two)
+
+
+def isalignedvert(thing_one, thing_two, margin=1):
+    """
+    Indicates if the two points are vertically aligned within a margin of error.
+    """
+    thing_one_center = findcenter(thing_one)
+    thing_two_center = findcenter(thing_two)
+
+    # To check for vertical alignment see if the X coordinates are within the 
+    # margin of error.
+    if isleft(thing_one_center, thing_two_center):
+        # thing_one_center[0] is lower than thing_two_center
+        return (thing_one_center[0] + 10) >= thing_two_center[0]
+    else:
+        # thing_one is right, or exactly the same as thing_two
+        return (thing_one_center[0] - 10) <= thing_two_center[0]
+
+
+def isalignedhoriz(thing_one, thing_two, margin=1):
+    """
+    Indicates if the two points are horizontally aligned within a margin of error.
+    """
+    thing_one_center = findcenter(thing_one)
+    thing_two_center = findcenter(thing_two)
+
+    # To check for horizontal alignment see if the Y coordinates are within the 
+    # margin of error.
+    if isabove(thing_one_center, thing_two_center):
+        # thing_one_center[1] is lower than thing_two_center
+        return (thing_one_center[1] + 10) >= thing_two_center[1]
+    else:
+        # thing_one is below, or exactly the same as thing_two
+        return (thing_one_center[1] - 10) <= thing_two_center[1]
