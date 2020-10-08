@@ -30,6 +30,9 @@ wheel: $(WHEEL)
 install: build $(WHEEL)
 	pip install --force-reinstall $(WHEEL)
 
+install-dev:
+	pip install -e .
+
 uninstall:
 	pip uninstall -y cgm
 
